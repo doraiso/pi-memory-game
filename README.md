@@ -33,7 +33,7 @@
 
 ## 🫠 URL
 
-
+https://doraiso.github.io/pi-memory-game/
 
 > もっと長く続けられるかな？
 > `π` の世界で、自分だけの記録を更新しよう！
