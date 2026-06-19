@@ -247,18 +247,18 @@ h1 {
   background: #fff;
   line-height: 1.8;
   text-align: left;
-}
+    overflow-wrap: break-word;
+  }
 
-.result strong {
-  color: var(--accent-dark);
-}
+  .result strong {
+    color: var(--accent-dark);
+  }
 
-.hidden {
-  display: none;
-}
-
-@media (max-width: 560px) {
-  .hero-card {
+  .pi-result {
+    display: inline-block;
+    max-width: 100%;
+    word-break: break-all;
+    white-space: normal;
     border-radius: 26px;
   }
 
