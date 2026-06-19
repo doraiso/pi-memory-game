@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>円周率暗記ゲーム</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <section class="hero-card">
+      <div class="math-doodles" aria-hidden="true">
+        <span>π</span>
+        <span>3.??</span>
+        <span>r</span>
+        <span>2πr</span>
+        <span>∞</span>
+      </div>
+
+      <p class="eyebrow">Pi Memory Challenge</p>
+      <h1>円周率暗記ゲーム</h1>
+      <p class="lead">
+        円周率の小数点以下を、1桁ずつ答えよう。<br />
+        間違えたところであなたの記録が決まります。
+      </p>
+
+      <div class="game-panel">
+        <div class="current-pi-box">
+          <span class="label">現在の円周率</span>
+          <p id="currentPi" class="current-pi">3.</p>
+        </div>
+
+        <div id="question" class="question">小数点第1位は？</div>
+
+        <form id="answerForm" class="answer-form" autocomplete="off">
+          <input
+            id="answerInput"
+            class="answer-input"
+            type="text"
+            inputmode="numeric"
+            pattern="[0-9]"
+            maxlength="1"
+            aria-label="答えを1桁入力"
+            placeholder="?"
+          />
+          <button id="answerButton" class="primary-button" type="submit">答える</button>
+        </form>
+
+        <p id="message" class="message">数字を1つ入力してね。</p>
+
+        <div class="status-grid">
+          <div>
+            <span class="status-label">正解桁数</span>
+            <strong id="score">0</strong>
+          </div>
+          <div>
+            <span class="status-label">最高記録</span>
+            <strong id="bestScore">0</strong>
+          </div>
+          <div>
+            <span class="status-label">称号</span>
+            <strong id="rank">まだ円</strong>
+          </div>
+        </div>
+
+        <div id="result" class="result hidden" aria-live="polite"></div>
+        <button id="retryButton" class="secondary-button hidden" type="button">もう一回</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
