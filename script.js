@@ -35,6 +35,7 @@ const answerButton = document.getElementById("answerButton");
 let correctDigits = "";
 let isGameOver = false;
 let bestScore = Number(localStorage.getItem("piMemoryBestScore")) || 0;
+const DEBUG_FORCE_100_DIGITS = false; // デバッグ用: 結果表示で円周率100桁を表示
 
 function getRank(score) {
   if (score === 0) return "まだ円";
@@ -75,7 +76,9 @@ function finishGame(correctAnswer) {
     localStorage.setItem("piMemoryBestScore", String(bestScore));
   }
 
-  const revealedPi = `3.${correctDigits}${correctAnswer}...`;
+  const revealedPi = DEBUG_FORCE_100_DIGITS
+    ? `3.${PI_DIGITS.slice(0, 100)}...`
+    : `3.${correctDigits}${correctAnswer}...`;
   resultEl.innerHTML = `
     <strong>不正解！</strong><br>
     あなたは円周率を小数点以下<strong>${score}桁</strong>まで覚えています。<br>
