@@ -31,11 +31,16 @@ const rankEl = document.getElementById("rank");
 const resultEl = document.getElementById("result");
 const retryButton = document.getElementById("retryButton");
 const answerButton = document.getElementById("answerButton");
+const celebrationEl = document.getElementById("celebration");
+const gamePanel = document.querySelector(".game-panel");
 
 let correctDigits = "";
 let isGameOver = false;
 let bestScore = Number(localStorage.getItem("piMemoryBestScore")) || 0;
+let celebrationTimer = null;
 const DEBUG_FORCE_100_DIGITS = false; // デバッグ用: 結果表示で円周率100桁を表示
+// デバッグ用マイルストーン: 数値を入れるとその桁数到達で祝賀が出ます。0 または null で無効化。
+const DEBUG_MILESTONE = 0; // 例: 2 にすると 3.14 到達で祝賀（デバッグ用）
 
 function getRank(score) {
   if (score === 0) return "まだ円";
@@ -79,16 +84,44 @@ function finishGame(correctAnswer) {
   const revealedPi = DEBUG_FORCE_100_DIGITS
     ? `3.${PI_DIGITS.slice(0, 100)}...`
     : `3.${correctDigits}${correctAnswer}...`;
+  const displayAnswer = (typeof correctAnswer === "undefined" || correctAnswer === null)
+    ? "—"
+    : correctAnswer;
+
   resultEl.innerHTML = `
     <strong>不正解！</strong><br>
     あなたは円周率を小数点以下<strong>${score}桁</strong>まで覚えています。<br>
-    正解は <strong>${correctAnswer}</strong> でした。<br>
+    正解は <strong>${displayAnswer}</strong> でした。<br>
     称号は <strong>${getRank(score)}</strong> です。<br>
     円周率：<span class="pi-result">${revealedPi}</span>
   `;
   resultEl.classList.remove("hidden");
   setMessage("ゲーム終了。また挑戦してみよう！", "wrong");
   updateScreen();
+}
+
+function triggerCelebration() {
+  if (!celebrationEl || !gamePanel) return;
+  const target = (typeof DEBUG_MILESTONE === "number" && DEBUG_MILESTONE > 0) ? DEBUG_MILESTONE : 100;
+
+  celebrationEl.innerHTML = `
+    <div class="confetti-container">
+      ${Array.from({ length: 24 }, (_, index) => `<span class="confetti-piece piece-${index + 1}"></span>`).join("")}
+    </div>
+    <div class="celebration-ring"></div>
+    <div class="celebration-badge">
+      <span>🎉</span>
+      <strong>${target}桁達成！</strong>
+      <span>すごい！</span>
+    </div>
+  `;
+  celebrationEl.classList.remove("hidden");
+  gamePanel.classList.add("celebrate");
+  clearTimeout(celebrationTimer);
+  celebrationTimer = setTimeout(() => {
+    celebrationEl.classList.add("hidden");
+    gamePanel.classList.remove("celebrate");
+  }, 3600);
 }
 
 function judgeAnswer(answer) {
@@ -98,6 +131,45 @@ function judgeAnswer(answer) {
 
   if (answer === expectedDigit) {
     correctDigits += answer;
+
+    // マイルストーンはデバッグ用の値があればそれを優先、それ以外は通常の100桁を使用
+    const TARGET_MILESTONE = (typeof DEBUG_MILESTONE === "number" && DEBUG_MILESTONE > 0) ? DEBUG_MILESTONE : 100;
+
+    if (correctDigits.length === TARGET_MILESTONE) {
+      // マイルストーン到達時は祝賀を表示し、入力をロックして次の桁は要求しない
+      setMessage(`正解！${TARGET_MILESTONE}桁達成！おめでとう！`, "milestone");
+      triggerCelebration();
+
+      // スコアと称号を更新して保存
+      const score = correctDigits.length;
+      if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem("piMemoryBestScore", String(bestScore));
+      }
+      scoreEl.textContent = score;
+      bestScoreEl.textContent = bestScore;
+      rankEl.textContent = getRank(score);
+
+      // 入力をロックし、リトライボタンを表示する
+      isGameOver = true;
+      answerInput.disabled = true;
+      answerButton.disabled = true;
+      retryButton.classList.remove("hidden");
+
+      // 問いはマイルストーン表示に置き換える
+      questionEl.textContent = `${TARGET_MILESTONE}桁達成！おめでとう！`;
+
+      // 下の結果枠にも祝賀メッセージを表示して空欄にならないようにする
+      resultEl.innerHTML = `
+        <strong>🎉 ${TARGET_MILESTONE}桁達成！</strong><br>
+        おめでとうございます。現在の称号：<strong>${getRank(correctDigits.length)}</strong>
+      `;
+      resultEl.classList.remove("hidden");
+
+      return;
+    }
+    
+    // 通常の正解処理（マイルストーンに到達していなければ続行）
     setMessage("正解！その調子！", "correct");
     answerInput.value = "";
     updateScreen();
