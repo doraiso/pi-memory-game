@@ -72,7 +72,7 @@ function setMessage(text, type = "") {
 function finishGame(correctAnswer) {
   isGameOver = true;
   answerInput.disabled = true;
-  answerButton.disabled = true;
+  if (answerButton) answerButton.disabled = true;
   retryButton.classList.remove("hidden");
 
   const score = correctDigits.length;
@@ -153,7 +153,7 @@ function judgeAnswer(answer) {
       // 入力をロックし、リトライボタンを表示する
       isGameOver = true;
       answerInput.disabled = true;
-      answerButton.disabled = true;
+      if (answerButton) answerButton.disabled = true;
       retryButton.classList.remove("hidden");
 
       // 問いはマイルストーン表示に置き換える
@@ -184,7 +184,7 @@ function judgeAnswer(answer) {
       resultEl.classList.remove("hidden");
       retryButton.classList.remove("hidden");
       answerInput.disabled = true;
-      answerButton.disabled = true;
+      if (answerButton) answerButton.disabled = true;
     }
     return;
   }
@@ -193,7 +193,12 @@ function judgeAnswer(answer) {
 }
 
 answerInput.addEventListener("input", () => {
-  answerInput.value = answerInput.value.replace(/[^0-9]/g, "").slice(0, 1);
+  const answer = answerInput.value.replace(/[^0-9]/g, "").slice(0, 1);
+  answerInput.value = answer;
+
+  if (answer.length === 1 && !isGameOver) {
+    judgeAnswer(answer);
+  }
 });
 
 answerForm.addEventListener("submit", (event) => {
@@ -214,7 +219,7 @@ retryButton.addEventListener("click", () => {
   correctDigits = "";
   isGameOver = false;
   answerInput.disabled = false;
-  answerButton.disabled = false;
+  if (answerButton) answerButton.disabled = false;
   answerInput.value = "";
   resultEl.classList.add("hidden");
   retryButton.classList.add("hidden");
