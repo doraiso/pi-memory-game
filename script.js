@@ -83,7 +83,7 @@ function finishGame(correctAnswer) {
 
   const revealedPi = DEBUG_FORCE_100_DIGITS
     ? `3.${PI_DIGITS.slice(0, 100)}...`
-    : `3.${correctDigits}${PI_DIGITS.slice(correctDigits.length, correctDigits.length + 10)}...`;
+    : `3.${correctDigits}<span class="highlight-next">${PI_DIGITS.slice(correctDigits.length, correctDigits.length + 10)}</span>...`;
   const displayAnswer = (typeof correctAnswer === "undefined" || correctAnswer === null)
     ? "—"
     : correctAnswer;
